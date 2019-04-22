@@ -6,7 +6,9 @@ def kmeans(team_id, year = 2017, n_clusters = 91):
     # Dictionary by year containing dataframes
     # Up to 68 teams per year
     data = ld.load_normalized_data_without_year(year)
+    data["team_id_copy"] = data.index
     data_without_year = data.drop("year", axis=1)
+    data_without_year = data_without_year.drop("team_id_copy", axis=1)
     latest = ld.load_normalized_year_data(year)
     team = ld.load_normalized_team_data(team_id, year)
 
@@ -18,10 +20,7 @@ def kmeans(team_id, year = 2017, n_clusters = 91):
             cluster.append(i)
     teams = []
     for index in cluster:
-        year = 2003 + index//68
-        num = index%68
-        teams.append((year,num))
+        teams.append((int(data.iloc[index].team_id_copy),data.iloc[index].year))
     return teams
-
 
 #print(kmeans(1291)) #1243, 1374, 1291,1344 are other ids

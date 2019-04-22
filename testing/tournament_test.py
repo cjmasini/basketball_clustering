@@ -17,10 +17,10 @@ def k_means_predictor(t1, t2, year=2017):
     cluster2 = kmeans(t2.id, year)
     wins1 = []
     for team in cluster1:
-        wins1.append(get_wins(team[0], year))
+        wins1.append(get_wins(team[0], team[1]))
     wins2 = []
     for team in cluster1:
-        wins2.append(get_wins(team[0], year))
+        wins2.append(get_wins(team[0], team[1]))
     return t1 if 1.*sum(wins1)/len(wins1) >= 1.*sum(wins2)/len(wins2) else t2
 
 
@@ -28,9 +28,10 @@ prediction_functions = {"Higher seed wins": higher_seed_wins, "Lower id wins": l
 
 for name, prediction_function in prediction_functions.items():
     s = []
-    for predict_year in range(2003,2018):
-        for year in [i for i in range(2003,2018) if i != predict_year]:
-            filename = "{}dataMatrix.csv".format(year)
-            b = Bracket(filename,year)
-            s.append(b.score_tournament(prediction_function,year))
+    predict_year = 2017
+    #for predict_year in range(2003,2018):
+    for year in [i for i in range(2003,2018) if i != predict_year]:
+        filename = "{}dataMatrix.csv".format(year)
+        b = Bracket(filename,year)
+        s.append(b.score_tournament(prediction_function,year))
     print(name + " - Average Score: {:0.2f}".format(sum(s)/len(s)))
