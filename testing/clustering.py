@@ -1,5 +1,6 @@
 from sklearn.cluster import KMeans, SpectralClustering, AgglomerativeClustering, Birch
 from sklearn.decomposition import PCA
+from sklearn.neighbors import NearestNeighbors
 import numpy as np
 import util.load_data as ld
 
@@ -103,12 +104,26 @@ def pca_hierarchical_single(team_id, year = 2017, n_clusters = 91):
 def pca_birch(team_id, year = 2017, n_clusters = 160):
     return clustering(team_id, year = year, n_clusters = n_clusters, func=Birch, fittable=True, pca_flag=True)
 
+def kneighbors(team_id, year = 2017, n_neighbors=10):
+    data = ld.load_normalized_data_without_year(year)
+    data["team_id_copy"] = data.index
+    data_without_year = data.drop("year", axis=1)
+    data_without_year = data_without_year.drop("team_id_copy", axis=1)
+    latest = ld.load_normalized_year_data(year)
+    team = ld.load_normalized_team_data(team_id, year)
+    cluster = NearestNeighbors(n_neighbors=n_neighbors).fit(data_without_year.values).kneighbors([team.values[:-1]])[1][0]
+    teams = []
+    for index in cluster:
+        teams.append((int(data.iloc[index].team_id_copy),data.iloc[index].year))
+    return teams
+
 #print(kmeans(1291)) #1243, 1374, 1291,1344 are other ids
 #print(spectral(1291))
-print(hierarchical_ward(1291))
-print(hierarchical_complete(1291))
-print(hierarchical_average(1291))
-print(hierarchical_single(1291))
+#print(hierarchical_ward(1291))
+#print(hierarchical_complete(1291))
+#print(hierarchical_average(1291))
+#print(hierarchical_single(1291))
 #print(birch(1291))
-print(pca(1291))
+print(pca_kmeans(1291))
+print(kneighbors(1291))
 

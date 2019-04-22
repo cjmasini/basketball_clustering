@@ -67,9 +67,20 @@ def pca_kmeans_predictor(t1, t2, year=2017):
         wins2.append(get_wins(team[0], team[1]))
     return t1 if 1.*sum(wins1)/len(wins1) >= 1.*sum(wins2)/len(wins2) else t2
 
+def kneighbors_predictor(t1, t2, year=2017):
+    cluster1 = kneighbors(t1.id, year)
+    cluster2 = kneighbors(t2.id, year)
+    wins1 = []
+    for team in cluster1:
+        wins1.append(get_wins(team[0], team[1]))
+    wins2 = []
+    for team in cluster1:
+        wins2.append(get_wins(team[0], team[1]))
+    return t1 if 1.*sum(wins1)/len(wins1) >= 1.*sum(wins2)/len(wins2) else t2
+
 prediction_functions = {"Higher seed wins": higher_seed_wins, "Lower id wins": lower_id_wins, 'k-means': k_means_predictor,
                         "spectral": spectral_predictor, "hierarchical", hierarchical_predictor, "birch", birch_predictor,
-                        "pca_k-means": pca_kmeans_predictor}
+                        "pca_k-means": pca_kmeans_predictor, "kneighbors": kneighbors_predictor}
 
 for name, prediction_function in prediction_functions.items():
     s = []
