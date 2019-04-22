@@ -11,12 +11,19 @@ def higher_seed_wins(t1,t2):
 def lower_id_wins(t1, t2):
     return t1 if t1.id < t2.id else t2
 
+def more_similar_wins(t1, t2):
+    # use k means to create clusters here
+    wins1 = 0
+    for team in cluster1:
+        wins1 += get_wins(team[0])
+    wins2 = 0
+    for team in cluster1:
+        wins2 += get_wins(team[0])
+
+
 prediction_functions = {"Higher seed wins": higher_seed_wins, "Lower id wins": lower_id_wins}
 
 for name, prediction_function in prediction_functions.items():
-    #Need to specify path for calculation of team stats, results and glicko scores
-    filename = '2dataMatrix.csv'
-
     s = []
     for year in range(2003,2018):
         filename = "{}dataMatrix.csv".format(year)

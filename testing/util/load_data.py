@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn import preprocessing
 
 
@@ -39,8 +40,8 @@ def load_normalized_data_as_dataframe():
         data = data.append(normalize(df))
     return data
 
-def load_normalized_2017_as_dataframe():
-    filename = "../data/data_matrices/tournament_stats/2017tournamentStats.csv"
+def load_normalized_year_as_dataframe(year):
+    filename = "../data/data_matrices/tournament_stats/{}tournamentStats.csv".format(year)
     df = pd.read_csv(filename)
     df = df.rename(columns={ df.columns[0]: "team_id" })
     df.set_index('team_id',inplace=True)
@@ -60,3 +61,10 @@ def normalize(df):
         df[col] = (df[col] - df[col].mean())/df[col].std(ddof=0)
     return df
 
+def get_wins(team_id, year, path_to_combined = "../data/data_matrices/tournament_matrices/dataMatrix_combined.csv"):
+    df = pd.read_csv(path_to_combined)
+    tournament = df[np.logical_and(df['tourny'] == 1, df['year'] == year)]
+    num_games = len(tournament)
+    tournament = tournament.iloc[num_games-63:num_games]
+    tournament = tournament[np.logical_or(tournament['id_0'] == team_id, tournament['id_1'] == team_id)]
+    return len(tournament)-1
