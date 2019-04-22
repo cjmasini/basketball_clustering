@@ -57,55 +57,55 @@ class Bracket:
                 return ret
         return recurse_lists(self.bracket)
 
-    def play_round(self, prediction_function):
-        def play_round_help(li, prediction_function):
+    def play_round(self, prediction_function, year = 2017):
+        def play_round_help(li, prediction_function, year = 2017):
             if not isinstance(li[0], (list,)):
-                return prediction_function(li[0],li[1])
+                return prediction_function(li[0],li[1], year)
             else:
                 ret = []
                 for l in li:
-                    ret.append(play_round_help(l,prediction_function))
+                    ret.append(play_round_help(l,prediction_function, year))
                 return ret
-        self.bracket = play_round_help(self.bracket, prediction_function)
+        self.bracket = play_round_help(self.bracket, prediction_function, year)
 
-    def play_tournament(self,prediction_function):
+    def play_tournament(self,prediction_function, year = 2017):
         print("\nRound of 64")
         games = self.get_games()
         for game in games:
             print('{} vs {}'.format(game[0].name,game[1].name))
 
         print("\nRound of 32")
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         games = self.get_games()
         for game in games:
             print('{} vs {}'.format(game[0].name,game[1].name))
 
         print("\nSweet 16")
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         games = self.get_games()
         for game in games:
             print('{} vs {}'.format(game[0].name,game[1].name))
 
         print("\nElite Eight")
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         games = self.get_games()
         for game in games:
             print('{} vs {}'.format(game[0].name,game[1].name))
 
         print("\nFinal Four")
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         games = self.get_games()
         for game in games:
             print('{} vs {}'.format(game[0].name,game[1].name))
 
         print("\nNational Champianship")
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         games = self.get_games()
         for game in games:
             print('{} vs {}'.format(game[0].name,game[1].name))
 
         print("\nWinner")
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         game = self.get_games()
         print('{} wins!\n'.format(game.name))
 
@@ -157,7 +157,7 @@ class Bracket:
                 return [] + make_list(teams[0]) + make_list(teams[1])
         return make_list(self.bracket)
 
-    def score_tournament(self, prediction_function):
+    def score_tournament(self, prediction_function, year = 2017):
         df = pd.read_csv(self.file)
         df = pd.read_csv(self.file)
         df = df[np.logical_and(df['year'] == self.year, df['tourny'] == 1)]
@@ -167,32 +167,32 @@ class Bracket:
         #Round of 64
         points = 0
         #Round of 32
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         predicted_teams = set([g.name for g in self.get_teams()])
         actual_teams = set([team_names[team_names['TeamID'] == tournament.iloc[i]['id_0']].iloc[0]['TeamName'] for i in range(32,48)] + [team_names[team_names['TeamID'] == tournament.iloc[i]['id_1']].iloc[0]['TeamName'] for i in range(32,48)])
         points += 1*len(predicted_teams.intersection(actual_teams))
         #Sweet 16
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         predicted_teams = set([g.name for g in self.get_teams()])
         actual_teams = set([team_names[team_names['TeamID'] == tournament.iloc[i]['id_0']].iloc[0]['TeamName'] for i in range(48,56)] + [team_names[team_names['TeamID'] == tournament.iloc[i]['id_1']].iloc[0]['TeamName'] for i in range(48,56)])
         points += 2*len(predicted_teams.intersection(actual_teams))
         #Elite Eight
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         predicted_teams = set([g.name for g in self.get_teams()])
         actual_teams = set([team_names[team_names['TeamID'] == tournament.iloc[i]['id_0']].iloc[0]['TeamName'] for i in range(56,60)] + [team_names[team_names['TeamID'] == tournament.iloc[i]['id_1']].iloc[0]['TeamName'] for i in range(56,60)])
         points += 4*len(predicted_teams.intersection(actual_teams))
         #Final Four
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         predicted_teams = set([g.name for g in self.get_teams()])
         actual_teams = set([team_names[team_names['TeamID'] == tournament.iloc[i]['id_0']].iloc[0]['TeamName'] for i in range(60,62)] + [team_names[team_names['TeamID'] == tournament.iloc[i]['id_1']].iloc[0]['TeamName'] for i in range(60,62)])
         points += 8*len(predicted_teams.intersection(actual_teams))
         #National Champianship
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         predicted_teams = set([g.name for g in self.get_teams()])
         actual_teams = set([team_names[team_names['TeamID'] == tournament.iloc[i]['id_0']].iloc[0]['TeamName'] for i in range(62,63)] + [team_names[team_names['TeamID'] == tournament.iloc[i]['id_1']].iloc[0]['TeamName'] for i in range(62,63)])
         points += 16*len(predicted_teams.intersection(actual_teams))
         #Winner
-        self.play_round(prediction_function)
+        self.play_round(prediction_function,year)
         predicted_teams = set([g.name for g in self.get_teams()])
         if tournament.iloc[62]['label'] == 0:
             actual_teams = set([team_names[team_names['TeamID'] == tournament.iloc[62]['id_0']].iloc[0]['TeamName']])
