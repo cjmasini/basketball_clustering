@@ -57,7 +57,8 @@ def pca_hierarchical_predictor(t1, t2, year=2017):
 def pca_spectral_predictor(t1, t2, year=2017):
     return clustering_predictor(t1, t2, year, pca_spectral)
 
-prediction_functions = {"spectral": spectral_predictor, "hierarchical": hierarchical_predictor, "birch": birch_predictor,"kneighbors": kneighbors_predictor, "Higher seed wins": higher_seed_wins, "Lower id wins": lower_id_wins, 'k-means': k_means_predictor,"pca_k-means": pca_kmeans_predictor, "pca_kneighbors": pca_kneighbors_predictor, "pca_hierarchical": pca_hierarchical_predictor, "pca_spectral": pca_spectral_predictor}
+prediction_functions = {"spectral": spectral_predictor, 'k-means': k_means_predictor, "pca_k-means": pca_kmeans_predictor,
+"pca_kneighbors": pca_kneighbors_predictor, "pca_hierarchical": pca_hierarchical_predictor, "pca_spectral": pca_spectral_predictor}
 
 for name, prediction_function in prediction_functions.items():
     s = []

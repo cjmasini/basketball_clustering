@@ -4,7 +4,7 @@ from sklearn.neighbors import NearestNeighbors
 import numpy as np
 import util.load_data as ld
 
-def clustering(team_id, year = 2017, n_clusters = 91, func=None, fittable=None, pca_flag=False, pca_components=43, linkage="ward"):
+def clustering(team_id, year = 2017, n_clusters = 91, func=None, fittable=None, pca_flag=False, pca_components=10, linkage="ward"):
     # Dictionary by year containing dataframes
     # Up to 68 teams per year
     if func is not None and fittable is not None:
@@ -20,7 +20,10 @@ def clustering(team_id, year = 2017, n_clusters = 91, func=None, fittable=None, 
             fit_data = data_without_year.values
             fit_team = team.values[:-1]
         if fittable:
-            model = func(n_clusters=n_clusters).fit(data_without_year.values)
+            if func==KMeans:
+                model = func(n_clusters=n_clusters, random_state=0).fit(data_without_year.values)
+            else:
+                model = func(n_clusters=n_clusters).fit(data_without_year.values)
             prediction = model.predict([team.values[:-1]])
             cluster = []
             for i, c in enumerate(model.labels_):
@@ -29,6 +32,8 @@ def clustering(team_id, year = 2017, n_clusters = 91, func=None, fittable=None, 
         else:
             if func==AgglomerativeClustering:
                 labels = AgglomerativeClustering(n_clusters=n_clusters,linkage=linkage).fit_predict(np.concatenate((fit_data,[fit_team]),0))
+            elif func==SpectralClustering:
+                labels = func(n_clusters=n_clusters, random_state=0).fit_predict(np.concatenate((fit_data,[fit_team]),0))
             else:
                 labels = func(n_clusters=n_clusters).fit_predict(np.concatenate((fit_data,[fit_team]),0))
             prediction = labels[-1]
@@ -44,7 +49,7 @@ def clustering(team_id, year = 2017, n_clusters = 91, func=None, fittable=None, 
     else:
         print("ERROR: Either func or fittable is None!")
 
-def pca(team_id, year = 2017, n_components=43):
+def pca(team_id, year = 2017, n_components=10):
     data = ld.load_normalized_data_without_year(year)
     data["team_id_copy"] = data.index
     data_without_year = data.drop("year", axis=1)
@@ -104,7 +109,7 @@ def pca_hierarchical_single(team_id, year = 2017, n_clusters = 91):
 def pca_birch(team_id, year = 2017, n_clusters = 160):
     return clustering(team_id, year = year, n_clusters = n_clusters, func=Birch, fittable=True, pca_flag=True)
 
-def kneighbors(team_id, year = 2017, n_neighbors=10, pca_flag=False, pca_components=43):
+def kneighbors(team_id, year = 2017, n_neighbors=10, pca_flag=False, pca_components=10):
     data = ld.load_normalized_data_without_year(year)
     data["team_id_copy"] = data.index
     data_without_year = data.drop("year", axis=1)
@@ -122,7 +127,7 @@ def kneighbors(team_id, year = 2017, n_neighbors=10, pca_flag=False, pca_compone
         teams.append((int(data.iloc[index].team_id_copy),data.iloc[index].year))
     return teams
 
-def pca_kneighbors(team_id, year = 2017, n_neighbors=10, n_components=43):
+def pca_kneighbors(team_id, year = 2017, n_neighbors=10, n_components=10):
     return kneighbors(team_id, year, n_neighbors, True, n_components)
 
 #print(kmeans(1291)) #1243, 1374, 1291,1344 are other ids
